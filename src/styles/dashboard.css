@@ -1,0 +1,179 @@
+/* 대시보드 스타일 */
+.dashboard-page {
+  min-height: 100vh;
+  background: #f7f7f7;
+  padding: 0;
+  width: 100%;
+  margin: 0;
+}
+
+.dashboard-content {
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard {
+    display: flex;
+  min-height: 100vh;
+  background: white;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  border: none;
+}
+
+.sidebar {
+  width: 260px;
+  background: #0e1e25;
+    color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header-title {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sidebar-admin-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.sidebar-logout-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar-menu {
+    list-style: none;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.sidebar-menu li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-menu a {
+    display: block;
+  padding: 14px 20px;
+  color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+  transition: all 0.2s ease;
+    font-size: 14px;
+  font-weight: 500;
+}
+
+.sidebar-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  padding-left: 24px;
+}
+
+.sidebar-menu a.active {
+  background: rgba(0, 199, 183, 0.15);
+  color: #00c7b7;
+  border-left: 3px solid #00c7b7;
+}
+
+.main-content {
+    flex: 1;
+  padding: 32px;
+  background: #ffffff;
+  overflow-y: auto;
+}
+
+.matching-info-section {
+  max-width: 600px;
+}
+
+.info-card {
+    background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.info-card h3 {
+  margin: 0 0 20px 0;
+  color: #0e1e25;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.info-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 24px;
+  color: #0e1e25;
+  font-weight: 600;
+}
+
+.matching-action-section {
+  text-align: center;
+  padding: 32px;
+}
+
+.matching-description {
+    color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.matching-action-section button {
+  margin-bottom: 24px;
+}
+
+.matching-action-section .alert {
+  margin-top: 24px;
+}

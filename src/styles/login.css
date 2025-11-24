@@ -1,0 +1,58 @@
+/* 로그인 페이지 스타일 */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
+    padding: 20px;
+}
+
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: 600;
+    color: #00C7B7;
+    margin-bottom: 30px;
+    letter-spacing: -0.5px;
+}
+
+.logo small {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+    font-weight: normal;
+}
+
+.login-container form {
+    margin-top: 20px;
+}
+
+.login-container .btn-primary {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.forgot-password {
+    display: block;
+    margin-top: 15px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.forgot-password:hover {
+    color: #4a90e2;
+}

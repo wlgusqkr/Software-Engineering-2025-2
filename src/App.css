@@ -1,0 +1,14 @@
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
