@@ -46,41 +46,18 @@ export default function Matching() {
   const [matchingStatus, setMatchingStatus] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
 
-  // 설문 목록 가져오기
+  // 설문 목록 가져오기 (서버 API로 대체 필요)
   const getSurveys = (): Survey[] => {
-    const stored = localStorage.getItem("surveys");
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return [];
-      }
-    }
+    // TODO: 서버 API에서 설문 목록 가져오기
+    // return await getSurveys();
     return [];
   };
 
-  // 특정 설문의 응답 데이터 가져오기
+  // 특정 설문의 응답 데이터 가져오기 (서버 API로 대체 필요)
   const getSurveyResponses = (surveyId: number): SurveyResponse[] => {
-    const surveys = getSurveys();
-    const survey = surveys.find((s) => s.id === surveyId);
-    if (!survey) return [];
-
-    const responses: SurveyResponse[] = [];
-    // 설문의 학생 목록에서 응답 찾기
-    const studentIds = survey.students
-      ? survey.students.map((s) => s.id)
-      : survey.studentIds;
-    studentIds.forEach((studentId: string) => {
-      const response = localStorage.getItem(`survey_${surveyId}_${studentId}`);
-      if (response) {
-        try {
-          responses.push(JSON.parse(response));
-        } catch {
-          console.error("Failed to parse survey response");
-        }
-      }
-    });
-    return responses;
+    // TODO: 서버 API에서 설문 응답 가져오기
+    // return await getSurveyResponses(surveyId);
+    return [];
   };
 
   const handleRunMatching = () => {
@@ -170,12 +147,9 @@ export default function Matching() {
         }
       }
 
-      // 매칭 결과를 localStorage에 저장 (설문별로 저장)
-      localStorage.setItem(
-        `matchingResults_${selectedSurveyId}`,
-        JSON.stringify(matchedPairs)
-      );
-      localStorage.setItem(`matchingExecuted_${selectedSurveyId}`, "true");
+      // 매칭 결과를 서버로 전송 (서버 API로 대체)
+      // TODO: 서버 API로 매칭 결과 저장
+      // await saveMatchingResults(selectedSurveyId, matchedPairs);
 
       setIsRunning(false);
       setMatchingStatus(

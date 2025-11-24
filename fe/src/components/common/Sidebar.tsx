@@ -1,13 +1,29 @@
 import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { signOut, getCurrentUser } from "../../api/auth";
 import "../../styles/dashboard.css";
 
 export default function Sidebar() {
   const location = useLocation();
+  const [adminEmail, setAdminEmail] = useState<string>("");
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAdmin");
-    localStorage.removeItem("adminEmail");
-    window.location.href = "/login";
+  useEffect(() => {
+    // 현재 로그인된 사용자 정보 가져오기
+    getCurrentUser().then((user) => {
+      if (user?.email) {
+        setAdminEmail(user.email);
+      }
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -16,7 +32,7 @@ export default function Sidebar() {
         <div className="sidebar-header-title">메뉴</div>
         <div className="sidebar-admin-info">
           <div className="admin-name">
-            관리자: {localStorage.getItem("adminEmail") || "홍길동님"}
+            관리자: {adminEmail || "관리자님"}
           </div>
           <button className="sidebar-logout-btn" onClick={handleLogout}>
             로그아웃

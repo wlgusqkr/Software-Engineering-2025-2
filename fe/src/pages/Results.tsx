@@ -36,42 +36,25 @@ export default function Results() {
   const [results, setResults] = useState<MatchResult[]>([]);
   const [surveys, setSurveys] = useState<Survey[]>([]);
 
-  // 설문 목록 가져오기 (매칭 결과가 있는 설문만)
+  // 설문 목록 가져오기 (매칭 결과가 있는 설문만) - 서버 API로 대체 필요
   const getSurveysWithResults = (): Survey[] => {
-    const stored = localStorage.getItem("surveys");
-    if (!stored) return [];
-
-    try {
-      const allSurveys: Survey[] = JSON.parse(stored);
-      // 매칭 결과가 있는 설문만 필터링
-      return allSurveys.filter((survey) => {
-        const matchingResults = localStorage.getItem(
-          `matchingResults_${survey.id}`
-        );
-        return matchingResults !== null;
-      });
-    } catch {
-      return [];
-    }
+    // TODO: 서버 API에서 매칭 결과가 있는 설문 목록 가져오기
+    // return await getSurveysWithMatchingResults();
+    return [];
   };
 
-  // 선택한 설문의 매칭 결과 가져오기
+  // 선택한 설문의 매칭 결과 가져오기 - 서버 API로 대체 필요
   const getMatchingResults = (surveyId: number): MatchResult[] => {
-    const stored = localStorage.getItem(`matchingResults_${surveyId}`);
-    if (!stored) return [];
-
-    try {
-      const matchedPairs: MatchedPair[] = JSON.parse(stored);
-      return matchedPairs.map((pair, index) => ({
-        id: index + 1,
-        roomNumber: `A${String(index + 1).padStart(3, "0")}`,
-        studentA: `${pair.studentAId} ${pair.studentA}`,
-        studentB: `${pair.studentBId} ${pair.studentB}`,
-        matchScore: pair.score,
-      }));
-    } catch {
-      return [];
-    }
+    // TODO: 서버 API에서 매칭 결과 가져오기
+    // const matchedPairs = await getMatchingResults(surveyId);
+    // return matchedPairs.map((pair, index) => ({
+    //   id: index + 1,
+    //   roomNumber: `A${String(index + 1).padStart(3, "0")}`,
+    //   studentA: `${pair.studentAId} ${pair.studentA}`,
+    //   studentB: `${pair.studentBId} ${pair.studentB}`,
+    //   matchScore: pair.score,
+    // }));
+    return [];
   };
 
   // 설문 목록 로드

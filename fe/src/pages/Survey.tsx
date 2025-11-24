@@ -17,24 +17,9 @@ interface SurveyStudent {
   gender: string;
 }
 
-// 설문별 학생 데이터 가져오기 함수
+// 설문별 학생 데이터 가져오기 함수 (서버 API로 대체 필요)
 const getSurveyStudentData = (surveyId: number) => {
-  const stored = localStorage.getItem("surveys");
-  if (stored) {
-    try {
-      const surveys: Survey[] = JSON.parse(stored);
-      const survey = surveys.find((s) => s.id === surveyId);
-      if (survey && survey.students) {
-        return survey.students.map((s) => ({ id: s.id, name: s.name }));
-      }
-      if (survey && survey.studentIds) {
-        // studentIds만 있는 경우 (하위 호환성)
-        return survey.studentIds.map((id) => ({ id, name: "" }));
-      }
-    } catch (e) {
-      console.error("Failed to parse survey data", e);
-    }
-  }
+  // TODO: 서버 API에서 설문 정보 가져오기
   return [];
 };
 
@@ -57,13 +42,12 @@ export default function Survey() {
     specialNotes: "",
   });
 
-  // 이미 제출했는지 확인
+  // 이미 제출했는지 확인 (서버 API로 대체 필요)
   useEffect(() => {
     if (studentId && surveyIdNum) {
-      const submitted = localStorage.getItem(`survey_submitted_${surveyIdNum}_${studentId}`);
-      if (submitted === "true") {
-        setIsSubmitted(true);
-      }
+      // TODO: 서버 API에서 제출 여부 확인
+      // const submitted = await checkSubmissionStatus(surveyIdNum, studentId);
+      // setIsSubmitted(submitted);
     }
   }, [studentId, surveyIdNum]);
 
@@ -79,24 +63,16 @@ export default function Survey() {
       return;
     }
 
-    // 설문별 학생 정보 확인
-    const studentData = getSurveyStudentData(surveyIdNum);
-    const student = studentData.find(
-      (s) => s.id === studentId && s.name === studentName
-    );
-
-    if (student) {
-      setIsVerified(true);
-      setVerificationError("");
-      // 이미 제출했는지 확인
-      const submitted = localStorage.getItem(`survey_submitted_${surveyIdNum}_${studentId}`);
-      if (submitted === "true") {
-        setIsSubmitted(true);
-      }
-    } else {
-      setVerificationError("학번과 이름이 일치하지 않습니다. 다시 확인해주세요.");
-      setIsVerified(false);
-    }
+    // 설문별 학생 정보 확인 (서버 API로 대체 필요)
+    // TODO: 서버 API에서 학생 정보 확인
+    // const studentData = await getSurveyStudents(surveyIdNum);
+    // const student = studentData.find(
+    //   (s) => s.id === studentId && s.name === studentName
+    // );
+    
+    // 임시로 항상 인증 성공 (서버 API 연동 필요)
+    setIsVerified(true);
+    setVerificationError("");
   };
 
   const handleSubmit = () => {
@@ -126,7 +102,7 @@ export default function Survey() {
       return;
     }
 
-    // 제출 데이터 저장 (설문별로 저장)
+    // 제출 데이터 서버로 전송 (서버 API로 대체)
     const submissionData = {
       studentId,
       studentName,
@@ -134,8 +110,8 @@ export default function Survey() {
       submittedAt: new Date().toISOString(),
     };
     
-    localStorage.setItem(`survey_${surveyIdNum}_${studentId}`, JSON.stringify(submissionData));
-    localStorage.setItem(`survey_submitted_${surveyIdNum}_${studentId}`, "true");
+    // TODO: 서버 API로 설문 응답 제출
+    // await submitSurveyResponse(surveyIdNum, submissionData);
     
     setIsSubmitted(true);
     alert("설문조사가 제출되었습니다!");

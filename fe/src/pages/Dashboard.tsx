@@ -15,45 +15,12 @@ interface Student {
 }
 
 export default function Dashboard() {
-  // localStorage에서 학생 데이터 가져오기 또는 기본 데이터 사용
-  const getInitialStudents = (): Student[] => {
-    const stored = localStorage.getItem("students");
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch (e) {
-        console.error("Failed to parse student data", e);
-      }
-    }
-    // 기본 학생 데이터
-    const defaultStudents: Student[] = [
-    {
-      id: "2024001",
-      name: "김철수",
-      gender: "남",
-      email: "kim@university.ac.kr",
-      birthDate: "2005-03-15",
-      registerDate: "2024-10-01",
-    },
-    {
-      id: "2024002",
-      name: "이영희",
-      gender: "여",
-      email: "lee@university.ac.kr",
-      birthDate: "2005-07-22",
-      registerDate: "2024-10-01",
-    },
-    ];
-    localStorage.setItem("students", JSON.stringify(defaultStudents));
-    return defaultStudents;
-  };
+  // 학생 데이터는 서버에서 가져옴 (로컬 스토리지 제거)
+  const [students, setStudents] = useState<Student[]>([]);
 
-  const [students, setStudents] = useState<Student[]>(getInitialStudents);
-
-  // 학생 데이터가 변경될 때마다 localStorage에 저장
+  // 학생 데이터 업데이트 (서버 API로 대체 필요)
   const updateStudents = (newStudents: Student[]) => {
     setStudents(newStudents);
-    localStorage.setItem("students", JSON.stringify(newStudents));
   };
 
   const handleEdit = (studentId: string) => {
