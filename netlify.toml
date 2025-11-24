@@ -1,0 +1,10 @@
+[build]
+  base = "fe"
+  command = "npm run build"
+  publish = "fe/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
