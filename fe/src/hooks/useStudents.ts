@@ -7,7 +7,6 @@ import {
   identifyStudent,
 } from '../api/admin';
 import type {
-  SurveyStudentResponse,
   AddStudentToSurveyRequest,
 } from '../types';
 

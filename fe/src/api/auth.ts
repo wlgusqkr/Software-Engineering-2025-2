@@ -117,7 +117,7 @@ export async function signUpAdmin(
     password: string
 ): Promise<{ userId: string | null; error: string | null }> {
     try {
-        const { userId, nextStep } = await signUp({
+        const { userId } = await signUp({
             username: email,
             password,
             options: {
@@ -128,7 +128,7 @@ export async function signUpAdmin(
         });
 
         // 회원가입 성공 시 userId 반환 (이메일 인증 필요)
-        return { userId, error: null };
+        return { userId: userId || null, error: null };
     } catch (error) {
         const errorMessage =
             error instanceof Error ? error.message : '회원가입에 실패했습니다.';

@@ -75,7 +75,10 @@ export default function Results() {
     if (surveyIdParam) {
       const surveyId = parseInt(surveyIdParam, 10);
       if (!isNaN(surveyId)) {
-        setSelectedSurveyId(surveyId);
+        // 비동기로 상태 업데이트하여 경고 방지
+        setTimeout(() => {
+          setSelectedSurveyId(surveyId);
+        }, 0);
       }
     }
   }, []);

@@ -3,11 +3,7 @@ import AdminLayout from "../components/common/AdminLayout";
 import SurveySelector from "../components/Matching/SurveySelector";
 import MatchingStats from "../components/Matching/MatchingStats";
 import MatchingAction from "../components/Matching/MatchingAction";
-import {
-  useMatchingResultsWithStats,
-  useSurveyResponses,
-  useRunMatching,
-} from "../hooks";
+import { useMatchingResultsWithStats, useRunMatching } from "../hooks";
 import "../styles/dashboard.css";
 import "../styles/survey.css";
 
@@ -19,32 +15,6 @@ interface Survey {
   deadline: string;
   status: "active" | "inactive";
   studentIds: string[];
-  students?: SurveyStudent[];
-  questions: Question[];
-}
-
-interface SurveyStudent {
-  id: string;
-  name: string;
-  gender: string;
-}
-
-interface Question {
-  id: number;
-  text: string;
-  type: "multiple-choice" | "text-input";
-}
-
-interface SurveyResponse {
-  studentId: string;
-  studentName: string;
-  wakeup: string;
-  bedtime: string;
-  smoking: string;
-  sleepHabits: string;
-  mbti?: string;
-  major?: string;
-  specialNotes?: string;
 }
 
 export default function Matching() {
@@ -74,8 +44,6 @@ export default function Matching() {
         : "",
       status: "active", // 서버에서 받은 설문은 모두 활성화된 것으로 간주
       studentIds: [],
-      students: [],
-      questions: [],
     };
   });
 
@@ -87,46 +55,10 @@ export default function Matching() {
     ? surveysWithStatsData.find((s) => s.formId === selectedSurvey.formId)
     : null;
 
-  // 선택된 설문의 응답 데이터 조회
-  const { data: responsesData = [] } = useSurveyResponses(
-    selectedSurveyWithStats?.formId || null
-  );
-
-  // 응답 데이터를 로컬 형식으로 변환
-  const getSurveyResponses = (): SurveyResponse[] => {
-    return responsesData.map((response) => {
-      // 설문 학생 목록에서 학생 이름 찾기
-      const survey = surveys.find((s) => s.id === selectedSurveyId);
-      const student = survey?.students?.find(
-        (s) => s.id === response.studentId
-      );
-
-      return {
-        studentId: response.studentId || "",
-        studentName: student?.name || "",
-        wakeup:
-          ((response.answers as Record<string, unknown>)?.wakeup as string) ||
-          "",
-        bedtime:
-          ((response.answers as Record<string, unknown>)?.bedtime as string) ||
-          "",
-        smoking:
-          ((response.answers as Record<string, unknown>)?.smoking as string) ||
-          "",
-        sleepHabits:
-          ((response.answers as Record<string, unknown>)
-            ?.sleepHabits as string) || "",
-        mbti:
-          ((response.answers as Record<string, unknown>)?.mbti as string) || "",
-        major:
-          ((response.answers as Record<string, unknown>)?.major as string) ||
-          "",
-        specialNotes:
-          ((response.answers as Record<string, unknown>)
-            ?.specialNotes as string) || "",
-      };
-    });
-  };
+  // 선택된 설문의 응답 데이터 조회 (현재 사용되지 않지만 향후 사용 가능)
+  // const { data: responsesData = [] } = useSurveyResponses(
+  //   selectedSurveyWithStats?.formId || null
+  // );
 
   const handleRunMatching = async () => {
     if (!selectedSurveyId) {

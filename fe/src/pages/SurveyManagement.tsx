@@ -7,7 +7,11 @@ import { useSurveys, useCreateSurvey } from "../hooks";
 import { parseExcelFile } from "../utils/excelParser";
 import "../styles/survey-management.css";
 
-import { type Survey, type SurveyStudent, type Question } from "../types/survey";
+import {
+  type Survey,
+  type SurveyStudent,
+  type Question,
+} from "../types/survey";
 
 export default function SurveyManagement() {
   // 설문 목록 조회
@@ -88,8 +92,19 @@ export default function SurveyManagement() {
     setSelectedSurvey(null);
   };
 
-  const handleSaveMatching = (students: any[]) => {
-    console.log("Saved students matching:", students);
+  interface Room {
+    id: string;
+    students: Array<{
+      id: string;
+      name: string;
+      gender: "남" | "여";
+      score: number;
+    } | null>;
+    score: number;
+  }
+
+  const handleSaveMatching = (rooms: Room[]) => {
+    console.log("Saved students matching:", rooms);
     // Here you would typically call an API to save the new order
     alert("매칭 결과가 저장되었습니다.");
   };
@@ -190,8 +205,8 @@ export default function SurveyManagement() {
           student.gender === "M"
             ? "남"
             : student.gender === "F"
-              ? "여"
-              : student.gender,
+            ? "여"
+            : student.gender,
       }));
 
       // 기존 학생 목록과 병합 (중복 제거)
@@ -214,7 +229,8 @@ export default function SurveyManagement() {
     } catch (error) {
       console.error("엑셀 파일 파싱 실패:", error);
       alert(
-        `엑셀 파일 파싱에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"
+        `엑셀 파일 파싱에 실패했습니다: ${
+          error instanceof Error ? error.message : "알 수 없는 오류"
         }`
       );
     } finally {

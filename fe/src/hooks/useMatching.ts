@@ -4,7 +4,7 @@ import {
   getMatchingResults,
   deleteMatchingResults,
 } from '../api/admin';
-import type { MatchingResultItemResponse } from '../types';
+// MatchingResultItemResponse는 getMatchingResults의 반환 타입으로 자동 추론됨
 
 // Query Keys
 export const matchingKeys = {

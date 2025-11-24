@@ -9,7 +9,6 @@ import {
   signUpAdmin,
   confirmSignUpAdmin,
 } from '../api/auth';
-import type { CognitoUser } from '../types';
 
 /**
  * 로그인

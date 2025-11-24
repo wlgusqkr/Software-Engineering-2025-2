@@ -4,7 +4,6 @@ import {
   getStudentResponse,
   submitSurveyResponse,
 } from '../api/admin';
-import type { SurveySubmissionResponse } from '../types';
 
 // Query Keys
 export const submissionKeys = {
