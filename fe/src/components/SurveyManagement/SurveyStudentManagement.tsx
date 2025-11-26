@@ -4,6 +4,7 @@ interface SurveyStudent {
   id: string;
   name: string;
   gender: string;
+  email?: string;
 }
 
 interface SurveyStudentManagementProps {
@@ -11,9 +12,11 @@ interface SurveyStudentManagementProps {
   newStudentId: string;
   newStudentName: string;
   newStudentGender: string;
+  newStudentEmail: string;
   onStudentIdChange: (value: string) => void;
   onStudentNameChange: (value: string) => void;
   onStudentGenderChange: (value: string) => void;
+  onStudentEmailChange: (value: string) => void;
   onAddStudent: () => void;
   onDeleteStudent: (studentId: string) => void;
   onUploadExcel: () => void;
@@ -25,9 +28,11 @@ export default function SurveyStudentManagement({
   newStudentId,
   newStudentName,
   newStudentGender,
+  newStudentEmail,
   onStudentIdChange,
   onStudentNameChange,
   onStudentGenderChange,
+  onStudentEmailChange,
   onAddStudent,
   onDeleteStudent,
   onUploadExcel,
@@ -82,6 +87,15 @@ export default function SurveyStudentManagement({
                   <option value="여">여</option>
                 </select>
               </div>
+              <div className="form-group-small">
+                <label>이메일</label>
+                <input
+                  type="email"
+                  placeholder="이메일"
+                  value={newStudentEmail}
+                  onChange={(e) => onStudentEmailChange(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -94,6 +108,7 @@ export default function SurveyStudentManagement({
                   <th>학번</th>
                   <th>이름</th>
                   <th>성별</th>
+                  <th>이메일</th>
                   <th>작업</th>
                 </tr>
               </thead>
@@ -103,6 +118,7 @@ export default function SurveyStudentManagement({
                     <td>{student.id}</td>
                     <td>{student.name}</td>
                     <td>{student.gender}</td>
+                    <td>{student.email || "-"}</td>
                     <td>
                       <button
                         className="btn-small btn-delete"

@@ -12,6 +12,7 @@ export interface SurveyParticipant {
     studentId: string;
     name: string;
     gender: '남' | '여';
+    email?: string;
 }
 
 /**

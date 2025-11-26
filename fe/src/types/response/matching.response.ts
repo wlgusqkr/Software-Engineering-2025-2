@@ -21,7 +21,18 @@ export interface MatchingResultResponse {
 export interface MatchingResultItemResponse {
     roomId: string;
     score: number;
-    memberA: string;
-    memberB: string;
+    memberA: string | { studentId?: string; name?: string; [key: string]: any };
+    memberB: string | { studentId?: string; name?: string; [key: string]: any };
+}
+
+/**
+ * 매칭 결과 전체 응답 (관리자용)
+ */
+export interface MatchingResultDetailResponse {
+    formId: string;
+    totalParticipants: number;
+    completedCount: number;
+    notCompletedCount: number;
+    results: MatchingResultItemResponse[];
 }
 

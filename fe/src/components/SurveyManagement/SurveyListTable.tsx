@@ -6,7 +6,10 @@ interface SurveyListTableProps {
   onTitleClick: (survey: Survey) => void;
 }
 
-export default function SurveyListTable({ surveys, onTitleClick }: SurveyListTableProps) {
+export default function SurveyListTable({
+  surveys,
+  onTitleClick,
+}: SurveyListTableProps) {
   return (
     <div className="survey-management-section existing-surveys-table">
       <h3>기존 설문 목록</h3>
@@ -19,8 +22,8 @@ export default function SurveyListTable({ surveys, onTitleClick }: SurveyListTab
           </tr>
         </thead>
         <tbody>
-          {surveys.map((survey) => (
-            <tr key={survey.id}>
+          {surveys.map((survey, index) => (
+            <tr key={`survey-${survey.id}-${index}`}>
               <td
                 className="survey-title-cell"
                 onClick={() => onTitleClick(survey)}

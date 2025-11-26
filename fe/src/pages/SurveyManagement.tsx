@@ -79,6 +79,7 @@ export default function SurveyManagement() {
   const [newStudentId, setNewStudentId] = useState("");
   const [newStudentName, setNewStudentName] = useState("");
   const [newStudentGender, setNewStudentGender] = useState("");
+  const [newStudentEmail, setNewStudentEmail] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [surveyLink, setSurveyLink] = useState("");
@@ -125,6 +126,7 @@ export default function SurveyManagement() {
       id: newStudentId,
       name: newStudentName,
       gender: newStudentGender,
+      email: newStudentEmail || undefined,
     };
 
     setSurveyStudents([...surveyStudents, newStudent]);
@@ -133,6 +135,7 @@ export default function SurveyManagement() {
     setNewStudentId("");
     setNewStudentName("");
     setNewStudentGender("");
+    setNewStudentEmail("");
   };
 
   const handleDeleteStudent = (studentId: string) => {
@@ -207,6 +210,7 @@ export default function SurveyManagement() {
             : student.gender === "F"
             ? "여"
             : student.gender,
+        email: student.email || undefined,
       }));
 
       // 기존 학생 목록과 병합 (중복 제거)
@@ -263,6 +267,7 @@ export default function SurveyManagement() {
       studentId: s.id,
       name: s.name,
       gender: s.gender as "남" | "여",
+      email: s.email,
     }));
 
     // 질문 데이터 변환 (서버 API 형식)
@@ -344,6 +349,7 @@ export default function SurveyManagement() {
       studentId: s.id,
       name: s.name,
       gender: s.gender as "남" | "여",
+      email: s.email,
     }));
 
     // 질문 데이터 변환 (서버 API 형식)
@@ -443,11 +449,13 @@ export default function SurveyManagement() {
         newStudentId={newStudentId}
         newStudentName={newStudentName}
         newStudentGender={newStudentGender}
+        newStudentEmail={newStudentEmail}
         onTitleChange={setSurveyTitle}
         onDeadlineChange={setSurveyDeadline}
         onStudentIdChange={setNewStudentId}
         onStudentNameChange={setNewStudentName}
         onStudentGenderChange={setNewStudentGender}
+        onStudentEmailChange={setNewStudentEmail}
         onAddStudent={handleAddStudent}
         onDeleteStudent={handleDeleteStudent}
         onUploadExcel={handleUploadExcel}

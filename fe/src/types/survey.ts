@@ -2,6 +2,7 @@ export interface SurveyStudent {
     id: string;
     name: string;
     gender: string;
+    email?: string;
 }
 
 export interface Question {

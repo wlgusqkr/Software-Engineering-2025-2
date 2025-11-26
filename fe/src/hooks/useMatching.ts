@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   runMatching,
   getMatchingResults,
+  getMatchingResultDetail,
   deleteMatchingResults,
 } from '../api/admin';
 // MatchingResultItemResponse는 getMatchingResults의 반환 타입으로 자동 추론됨
@@ -10,6 +11,7 @@ import {
 export const matchingKeys = {
   all: ['matching'] as const,
   results: (surveyId: string) => [...matchingKeys.all, 'results', surveyId] as const,
+  resultDetail: (formId: string) => [...matchingKeys.all, 'resultDetail', formId] as const,
 };
 
 /**
@@ -35,6 +37,17 @@ export function useMatchingResults(surveyId: string | null) {
     queryKey: matchingKeys.results(surveyId || ''),
     queryFn: () => getMatchingResults(surveyId!),
     enabled: !!surveyId,
+  });
+}
+
+/**
+ * 매칭 결과 상세 조회 (통계 정보 포함)
+ */
+export function useMatchingResultDetail(formId: string | null) {
+  return useQuery({
+    queryKey: matchingKeys.resultDetail(formId || ''),
+    queryFn: () => getMatchingResultDetail(formId!),
+    enabled: !!formId,
   });
 }
 

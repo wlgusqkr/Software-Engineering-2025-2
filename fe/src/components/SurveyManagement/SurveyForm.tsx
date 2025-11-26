@@ -6,6 +6,7 @@ interface SurveyStudent {
   id: string;
   name: string;
   gender: string;
+  email?: string;
 }
 
 interface Question {
@@ -22,11 +23,13 @@ interface SurveyFormProps {
   newStudentId: string;
   newStudentName: string;
   newStudentGender: string;
+  newStudentEmail: string;
   onTitleChange: (value: string) => void;
   onDeadlineChange: (value: string) => void;
   onStudentIdChange: (value: string) => void;
   onStudentNameChange: (value: string) => void;
   onStudentGenderChange: (value: string) => void;
+  onStudentEmailChange: (value: string) => void;
   onAddStudent: () => void;
   onDeleteStudent: (studentId: string) => void;
   onUploadExcel: () => void;
@@ -43,11 +46,13 @@ export default function SurveyForm({
   newStudentId,
   newStudentName,
   newStudentGender,
+  newStudentEmail,
   onTitleChange,
   onDeadlineChange,
   onStudentIdChange,
   onStudentNameChange,
   onStudentGenderChange,
+  onStudentEmailChange,
   onAddStudent,
   onDeleteStudent,
   onUploadExcel,
@@ -85,9 +90,11 @@ export default function SurveyForm({
         newStudentId={newStudentId}
         newStudentName={newStudentName}
         newStudentGender={newStudentGender}
+        newStudentEmail={newStudentEmail}
         onStudentIdChange={onStudentIdChange}
         onStudentNameChange={onStudentNameChange}
         onStudentGenderChange={onStudentGenderChange}
+        onStudentEmailChange={onStudentEmailChange}
         onAddStudent={onAddStudent}
         onDeleteStudent={onDeleteStudent}
         onUploadExcel={onUploadExcel}

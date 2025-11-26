@@ -9,7 +9,7 @@ interface Survey {
 interface ResultsSurveySelectorProps {
   surveys: Survey[];
   selectedSurveyId: number | null;
-  onSelectChange: (surveyId: number) => void;
+  onSelectChange: (surveyId: number | null) => void;
 }
 
 export default function ResultsSurveySelector({
@@ -22,7 +22,8 @@ export default function ResultsSurveySelector({
       <div className="form-group">
         <label>매칭 결과를 볼 설문 선택</label>
         <div className="alert alert-info">
-          매칭 결과가 있는 설문이 없습니다. 먼저 매칭 실행에서 매칭을 완료해주세요.
+          매칭 결과가 있는 설문이 없습니다. 먼저 매칭 실행에서 매칭을
+          완료해주세요.
         </div>
       </div>
     );
@@ -34,7 +35,10 @@ export default function ResultsSurveySelector({
       <select
         className="form-group input"
         value={selectedSurveyId || ""}
-        onChange={(e) => onSelectChange(Number(e.target.value))}
+        onChange={(e) => {
+          const value = e.target.value;
+          onSelectChange(value === "" ? null : Number(value));
+        }}
         style={{
           width: "100%",
           padding: "12px 16px",
@@ -51,4 +55,3 @@ export default function ResultsSurveySelector({
     </div>
   );
 }
-
