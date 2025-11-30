@@ -25,13 +25,13 @@ interface ResultsTableProps {
   results: MatchResult[];
 }
 
-export default function ResultsTable({
-  results,
-}: ResultsTableProps) {
+export default function ResultsTable({ results }: ResultsTableProps) {
   const getScoreClass = (score: number) => {
+    if (score === 0) return "zero";
     if (score >= 90) return "high";
     if (score >= 80) return "medium";
-    return "low";
+    if (score >= 50) return "low";
+    return "very-low";
   };
 
   return (
@@ -51,21 +51,37 @@ export default function ResultsTable({
               <td>{result.roomNumber}</td>
               <td>
                 <div className="student-info">
-                  <div className="student-name-id">
-                    {result.studentA.name} ({result.studentA.studentId})
-                  </div>
-                  {result.studentA.email && (
-                    <div className="student-email">{result.studentA.email}</div>
+                  {result.studentA?.name && result.studentA?.studentId ? (
+                    <>
+                      <div className="student-name-id">
+                        {result.studentA.name} ({result.studentA.studentId})
+                      </div>
+                      {result.studentA.email && (
+                        <div className="student-email">
+                          {result.studentA.email}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="student-empty">미배정</div>
                   )}
                 </div>
               </td>
               <td>
                 <div className="student-info">
-                  <div className="student-name-id">
-                    {result.studentB.name} ({result.studentB.studentId})
-                  </div>
-                  {result.studentB.email && (
-                    <div className="student-email">{result.studentB.email}</div>
+                  {result.studentB?.name && result.studentB?.studentId ? (
+                    <>
+                      <div className="student-name-id">
+                        {result.studentB.name} ({result.studentB.studentId})
+                      </div>
+                      {result.studentB.email && (
+                        <div className="student-email">
+                          {result.studentB.email}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="student-empty">미배정</div>
                   )}
                 </div>
               </td>
@@ -83,4 +99,3 @@ export default function ResultsTable({
     </div>
   );
 }
-

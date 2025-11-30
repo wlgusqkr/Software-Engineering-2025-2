@@ -36,6 +36,7 @@ interface SurveyFormProps {
   onSave: () => void;
   onDeploy: () => void;
   isUploading?: boolean;
+  isDeploying?: boolean;
 }
 
 export default function SurveyForm({
@@ -59,6 +60,7 @@ export default function SurveyForm({
   onSave,
   onDeploy,
   isUploading = false,
+  isDeploying = false,
 }: SurveyFormProps) {
   return (
     <div className="survey-management-section">
@@ -82,6 +84,7 @@ export default function SurveyForm({
           id="survey-deadline"
           value={deadline}
           onChange={(e) => onDeadlineChange(e.target.value)}
+          min={new Date().toISOString().split("T")[0]}
         />
       </div>
 
@@ -107,8 +110,13 @@ export default function SurveyForm({
         <button className="btn-secondary" id="save-survey" onClick={onSave}>
           저장
         </button>
-        <button className="btn-primary" id="deploy-survey" onClick={onDeploy}>
-          설문 배포 (링크 생성)
+        <button
+          className="btn-primary"
+          id="deploy-survey"
+          onClick={onDeploy}
+          disabled={isDeploying}
+        >
+          {isDeploying ? "생성 중..." : "설문 배포 (링크 생성)"}
         </button>
       </div>
     </div>

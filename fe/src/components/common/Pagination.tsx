@@ -28,23 +28,23 @@ export default function Pagination({
         for (let i = 1; i <= 7; i++) {
           pages.push(i);
         }
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       } else if (currentPage >= totalPages - 4) {
         // 뒷부분
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         for (let i = totalPages - 6; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
         // 중간
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         for (let i = currentPage - 2; i <= currentPage + 2; i++) {
           pages.push(i);
         }
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       }
     }
@@ -64,7 +64,7 @@ export default function Pagination({
         이전
       </button>
       {pageNumbers.map((page, index) => {
-        if (page === '...') {
+        if (page === "...") {
           return (
             <span key={`ellipsis-${index}`} className="pagination-ellipsis">
               ...
@@ -91,4 +91,3 @@ export default function Pagination({
     </div>
   );
 }
-

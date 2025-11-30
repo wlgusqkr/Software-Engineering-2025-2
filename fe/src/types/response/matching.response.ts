@@ -34,8 +34,8 @@ export interface MatchingMemberInfo {
 export interface MatchingResultItemResponse {
     roomId: string;
     score: string | number;
-    memberA: MatchingMemberInfo | string | { studentId?: string; name?: string; [key: string]: any };
-    memberB: MatchingMemberInfo | string | { studentId?: string; name?: string; [key: string]: any };
+    memberA: MatchingMemberInfo | string | { studentId?: string; name?: string;[key: string]: any };
+    memberB: MatchingMemberInfo | string | { studentId?: string; name?: string;[key: string]: any };
 }
 
 /**

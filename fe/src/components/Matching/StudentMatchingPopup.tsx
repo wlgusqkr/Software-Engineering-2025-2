@@ -17,6 +17,7 @@ interface Room {
 
 interface StudentMatchingPopupProps {
     surveyTitle: string;
+    students?: Array<{ id: string; name: string; gender: string }>;
     onClose: () => void;
     onSave: (rooms: Room[]) => void;
 }
@@ -51,6 +52,7 @@ const generateMockRooms = (gender: "남" | "여", count: number): Room[] => {
 
 export default function StudentMatchingPopup({
     surveyTitle,
+    students = [],
     onClose,
     onSave,
 }: StudentMatchingPopupProps) {
@@ -58,10 +60,52 @@ export default function StudentMatchingPopup({
     const [femaleRooms, setFemaleRooms] = useState<Room[]>([]);
 
     useEffect(() => {
-        // Initialize with mock data (5 rooms each)
-        setMaleRooms(generateMockRooms("남", 5));
-        setFemaleRooms(generateMockRooms("여", 5));
-    }, []);
+        // 실제 학생 데이터가 있으면 사용, 없으면 mock 데이터 사용
+        if (students && students.length > 0) {
+            // 성별별로 학생 분류
+            const maleStudents = students
+                .filter((s) => s.gender === "남" || s.gender === "M")
+                .map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    gender: "남" as const,
+                    score: Math.floor(Math.random() * 100), // 실제 매칭 점수는 서버에서 받아야 함
+                }));
+
+            const femaleStudents = students
+                .filter((s) => s.gender === "여" || s.gender === "F")
+                .map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    gender: "여" as const,
+                    score: Math.floor(Math.random() * 100), // 실제 매칭 점수는 서버에서 받아야 함
+                }));
+
+            // 학생들을 2명씩 묶어서 방 생성
+            const createRoomsFromStudents = (studentList: Student[], gender: "남" | "여"): Room[] => {
+                const rooms: Room[] = [];
+                for (let i = 0; i < studentList.length; i += 2) {
+                    const student1 = studentList[i];
+                    const student2 = studentList[i + 1] || null;
+                    rooms.push({
+                        id: `${gender === "남" ? "M" : "F"}-Room-${Math.floor(i / 2) + 1}`,
+                        students: [student1, student2],
+                        score: student2
+                            ? Math.floor((student1.score + student2.score) / 2)
+                            : student1.score,
+                    });
+                }
+                return rooms;
+            };
+
+            setMaleRooms(createRoomsFromStudents(maleStudents, "남"));
+            setFemaleRooms(createRoomsFromStudents(femaleStudents, "여"));
+        } else {
+            // Mock data fallback
+            setMaleRooms(generateMockRooms("남", 5));
+            setFemaleRooms(generateMockRooms("여", 5));
+        }
+    }, [students]);
 
     const onDragEnd = (result: DropResult) => {
         const { source, destination } = result;

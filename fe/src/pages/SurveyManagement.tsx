@@ -329,10 +329,27 @@ export default function SurveyManagement() {
   };
 
   const handleDeploySurvey = async () => {
+    // 이미 배포 중이면 중복 요청 방지
+    if (createSurveyMutation.isPending) {
+      return;
+    }
+
     if (!surveyTitle || !surveyDeadline) {
       alert("설문 제목과 마감일을 입력해주세요.");
       return;
     }
+
+    // 마감일이 오늘보다 이전이면 안됨
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadlineDate = new Date(surveyDeadline);
+    deadlineDate.setHours(0, 0, 0, 0);
+
+    if (deadlineDate < today) {
+      alert("마감일은 오늘 이후 날짜여야 합니다.");
+      return;
+    }
+
     if (surveyStudents.length === 0) {
       alert("최소 1명 이상의 학생을 추가해주세요.");
       return;
@@ -436,6 +453,7 @@ export default function SurveyManagement() {
       {selectedSurvey && (
         <StudentMatchingPopup
           surveyTitle={selectedSurvey.title}
+          students={selectedSurvey.students}
           onClose={handleClosePopup}
           onSave={handleSaveMatching}
         />
@@ -462,6 +480,7 @@ export default function SurveyManagement() {
         onSave={handleSaveSurvey}
         onDeploy={handleDeploySurvey}
         isUploading={isUploading}
+        isDeploying={createSurveyMutation.isPending}
       />
 
       {/* 설문 링크 모달 */}
