@@ -5,6 +5,10 @@ import SummaryCards from "../components/Results/SummaryCards";
 import ResultsTable from "../components/Results/ResultsTable";
 import Pagination from "../components/common/Pagination";
 import { useSurveys, useMatchingResultDetail } from "../hooks";
+import {
+  exportMatchingResultsToCSV,
+  sendMatchingResultsEmail,
+} from "../api/admin";
 import "../styles/common.css";
 import "../styles/results.css";
 import "../styles/dashboard.css";
@@ -80,7 +84,7 @@ export default function Results() {
     useMatchingResultDetail(selectedFormId);
 
   // 매칭 결과를 로컬 형식으로 변환
-  const convertMemberToStudent = (member: any) => {
+  const convertMemberToStudent = (member: unknown) => {
     if (!member) {
       return {
         name: "",
@@ -90,7 +94,7 @@ export default function Results() {
         completed: false,
       };
     }
-    
+
     if (typeof member === "string") {
       return {
         name: member,
@@ -101,49 +105,76 @@ export default function Results() {
       };
     }
 
+    if (typeof member === "object" && member !== null) {
+      const memberObj = member as Record<string, unknown>;
+      return {
+        name: (memberObj.name as string) || "",
+        studentId: (memberObj.studentId as string) || "",
+        email: (memberObj.email as string) || "",
+        gender: (memberObj.gender as string) || "",
+        completed: (memberObj.completed as boolean) || false,
+      };
+    }
+
     return {
-      name: member.name || "",
-      studentId: member.studentId || "",
-      email: member.email || "",
-      gender: member.gender || "",
-      completed: member.completed || false,
+      name: "",
+      studentId: "",
+      email: "",
+      gender: "",
+      completed: false,
     };
   };
 
   // 남성 결과 변환
-  const maleResults: MatchResult[] = (matchingDetail?.maleResults || []).map((item, index) => {
-    return {
-      id: index + 1,
-      roomNumber: item.roomId || `M${String(index + 1).padStart(3, "0")}`,
-      studentA: convertMemberToStudent(item.memberA),
-      studentB: convertMemberToStudent(item.memberB),
-      matchScore: typeof item.score === "string" ? parseInt(item.score, 10) || 0 : item.score || 0,
-    };
-  });
+  const maleResults: MatchResult[] = (matchingDetail?.maleResults || []).map(
+    (item, index) => {
+      return {
+        id: index + 1,
+        roomNumber: item.roomId || `M${String(index + 1).padStart(3, "0")}`,
+        studentA: convertMemberToStudent(item.memberA),
+        studentB: convertMemberToStudent(item.memberB),
+        matchScore:
+          typeof item.score === "string"
+            ? parseInt(item.score, 10) || 0
+            : item.score || 0,
+      };
+    }
+  );
 
   // 여성 결과 변환
-  const femaleResults: MatchResult[] = (matchingDetail?.femaleResults || []).map((item, index) => {
+  const femaleResults: MatchResult[] = (
+    matchingDetail?.femaleResults || []
+  ).map((item, index) => {
     return {
       id: index + 1,
       roomNumber: item.roomId || `F${String(index + 1).padStart(3, "0")}`,
       studentA: convertMemberToStudent(item.memberA),
       studentB: convertMemberToStudent(item.memberB),
-      matchScore: typeof item.score === "string" ? parseInt(item.score, 10) || 0 : item.score || 0,
+      matchScore:
+        typeof item.score === "string"
+          ? parseInt(item.score, 10) || 0
+          : item.score || 0,
     };
   });
 
   // 기존 형식 호환성 (results가 있는 경우)
-  const legacyResults: MatchResult[] = (matchingDetail?.results || []).map((item, index) => {
-    return {
-      id: index + 1,
-      roomNumber: item.roomId || `A${String(index + 1).padStart(3, "0")}`,
-      studentA: convertMemberToStudent(item.memberA),
-      studentB: convertMemberToStudent(item.memberB),
-      matchScore: typeof item.score === "string" ? parseInt(item.score, 10) || 0 : item.score || 0,
-    };
-  });
+  const legacyResults: MatchResult[] = (matchingDetail?.results || []).map(
+    (item, index) => {
+      return {
+        id: index + 1,
+        roomNumber: item.roomId || `A${String(index + 1).padStart(3, "0")}`,
+        studentA: convertMemberToStudent(item.memberA),
+        studentB: convertMemberToStudent(item.memberB),
+        matchScore:
+          typeof item.score === "string"
+            ? parseInt(item.score, 10) || 0
+            : item.score || 0,
+      };
+    }
+  );
 
-  const totalResults = maleResults.length + femaleResults.length + legacyResults.length;
+  const totalResults =
+    maleResults.length + femaleResults.length + legacyResults.length;
 
   // 남성 결과 페이징 계산
   const maleTotalPages = Math.ceil(maleResults.length / itemsPerPage);
@@ -155,22 +186,28 @@ export default function Results() {
   const femaleTotalPages = Math.ceil(femaleResults.length / itemsPerPage);
   const femaleStartIndex = (femaleCurrentPage - 1) * itemsPerPage;
   const femaleEndIndex = femaleStartIndex + itemsPerPage;
-  const paginatedFemaleResults = femaleResults.slice(femaleStartIndex, femaleEndIndex);
+  const paginatedFemaleResults = femaleResults.slice(
+    femaleStartIndex,
+    femaleEndIndex
+  );
 
   // 기존 형식 결과 페이징 계산
   const legacyTotalPages = Math.ceil(legacyResults.length / itemsPerPage);
   const legacyStartIndex = (legacyCurrentPage - 1) * itemsPerPage;
   const legacyEndIndex = legacyStartIndex + itemsPerPage;
-  const paginatedLegacyResults = legacyResults.slice(legacyStartIndex, legacyEndIndex);
+  const paginatedLegacyResults = legacyResults.slice(
+    legacyStartIndex,
+    legacyEndIndex
+  );
 
   // 페이지 변경 핸들러
   const handleMalePageChange = (page: number) => {
     if (page >= 1 && page <= maleTotalPages) {
       setMaleCurrentPage(page);
       // 해당 섹션으로 스크롤
-      const element = document.getElementById('male-results-section');
+      const element = document.getElementById("male-results-section");
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   };
@@ -179,9 +216,9 @@ export default function Results() {
     if (page >= 1 && page <= femaleTotalPages) {
       setFemaleCurrentPage(page);
       // 해당 섹션으로 스크롤
-      const element = document.getElementById('female-results-section');
+      const element = document.getElementById("female-results-section");
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   };
@@ -214,13 +251,49 @@ export default function Results() {
     }
   }, []);
 
-
-  const handleDownloadResults = () => {
-    if (!selectedSurveyId) {
+  const handleDownloadResults = async () => {
+    if (!selectedSurveyId || !selectedFormId) {
       alert("먼저 설문을 선택해주세요.");
       return;
     }
-    alert("엑셀 다운로드 기능 (구현 예정)");
+
+    try {
+      const success = await exportMatchingResultsToCSV(selectedFormId);
+      if (!success) {
+        alert("CSV 다운로드에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("CSV 다운로드 실패:", error);
+      alert("CSV 다운로드 중 오류가 발생했습니다.");
+    }
+  };
+
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const handleSendEmail = async () => {
+    if (!selectedSurveyId || !selectedFormId) {
+      alert("먼저 설문을 선택해주세요.");
+      return;
+    }
+
+    if (!confirm("학생들에게 매칭 결과를 이메일로 발송하시겠습니까?")) {
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const success = await sendMatchingResultsEmail(selectedFormId);
+      if (success) {
+        alert("이메일 발송이 완료되었습니다.");
+      } else {
+        alert("이메일 발송에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("이메일 발송 실패:", error);
+      alert("이메일 발송 중 오류가 발생했습니다.");
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   // 통계 계산 (API에서 받은 데이터 사용)
@@ -269,18 +342,31 @@ export default function Results() {
                 >
                   엑셀로 결과 다운로드
                 </button>
+                <button
+                  className="btn-primary"
+                  id="send-email-results"
+                  onClick={handleSendEmail}
+                  disabled={isSendingEmail}
+                >
+                  {isSendingEmail ? "발송 중..." : "학생에게 결과 이메일 발송"}
+                </button>
               </div>
 
               {/* 남성 매칭 결과 */}
               {maleResults.length > 0 && (
-                <div id="male-results-section" className="gender-results-section">
+                <div
+                  id="male-results-section"
+                  className="gender-results-section"
+                >
                   <h3 className="gender-section-title male-section">
-                    <span className="gender-icon">👨</span> 남성 매칭 결과 ({maleResults.length}쌍)
+                    <span className="gender-icon">👨</span> 남성 매칭 결과 (
+                    {maleResults.length}쌍)
                   </h3>
                   {paginatedMaleResults.length > 0 && (
                     <div className="results-table-wrapper">
                       <div className="results-info">
-                        전체 {maleResults.length}개 중 {maleStartIndex + 1}-{Math.min(maleEndIndex, maleResults.length)}개 표시
+                        전체 {maleResults.length}개 중 {maleStartIndex + 1}-
+                        {Math.min(maleEndIndex, maleResults.length)}개 표시
                       </div>
                       <ResultsTable results={paginatedMaleResults} />
                     </div>
@@ -297,14 +383,19 @@ export default function Results() {
 
               {/* 여성 매칭 결과 */}
               {femaleResults.length > 0 && (
-                <div id="female-results-section" className="gender-results-section">
+                <div
+                  id="female-results-section"
+                  className="gender-results-section"
+                >
                   <h3 className="gender-section-title female-section">
-                    <span className="gender-icon">👩</span> 여성 매칭 결과 ({femaleResults.length}쌍)
+                    <span className="gender-icon">👩</span> 여성 매칭 결과 (
+                    {femaleResults.length}쌍)
                   </h3>
                   {paginatedFemaleResults.length > 0 && (
                     <div className="results-table-wrapper">
                       <div className="results-info">
-                        전체 {femaleResults.length}개 중 {femaleStartIndex + 1}-{Math.min(femaleEndIndex, femaleResults.length)}개 표시
+                        전체 {femaleResults.length}개 중 {femaleStartIndex + 1}-
+                        {Math.min(femaleEndIndex, femaleResults.length)}개 표시
                       </div>
                       <ResultsTable results={paginatedFemaleResults} />
                     </div>
@@ -322,11 +413,14 @@ export default function Results() {
               {/* 기존 형식 호환성 */}
               {legacyResults.length > 0 && (
                 <div className="gender-results-section">
-                  <h3 className="gender-section-title">매칭 결과 ({legacyResults.length}쌍)</h3>
+                  <h3 className="gender-section-title">
+                    매칭 결과 ({legacyResults.length}쌍)
+                  </h3>
                   {paginatedLegacyResults.length > 0 && (
                     <div className="results-table-wrapper">
                       <div className="results-info">
-                        전체 {legacyResults.length}개 중 {legacyStartIndex + 1}-{Math.min(legacyEndIndex, legacyResults.length)}개 표시
+                        전체 {legacyResults.length}개 중 {legacyStartIndex + 1}-
+                        {Math.min(legacyEndIndex, legacyResults.length)}개 표시
                       </div>
                       <ResultsTable results={paginatedLegacyResults} />
                     </div>

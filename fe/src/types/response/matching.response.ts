@@ -51,3 +51,10 @@ export interface MatchingResultDetailResponse {
     results?: MatchingResultItemResponse[]; // 기존 형식 호환성
 }
 
+/**
+ * CSV 다운로드 응답
+ */
+export interface MatchingResultsExportResponse {
+    downloadUrl: string;
+}
+

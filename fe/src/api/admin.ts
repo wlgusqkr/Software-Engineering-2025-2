@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPut, apiDelete } from './config/api';
 import { apiClient } from './config/axios';
+import axiosInstance from './config/axios';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import type {
     SurveyResponse,
@@ -7,6 +8,7 @@ import type {
     MatchingResultResponse,
     MatchingResultItemResponse,
     MatchingResultDetailResponse,
+    MatchingResultsExportResponse,
     SurveyStudentResponse,
     CreateSurveyRequest,
     UpdateSurveyRequest,
@@ -519,5 +521,116 @@ export async function deleteMatchingResults(surveyId: string): Promise<boolean> 
         return false;
     }
     return response.data?.success || false;
+}
+
+/**
+ * 매칭 결과 CSV 다운로드
+ */
+export async function exportMatchingResultsToCSV(formId: string): Promise<boolean> {
+    // 인증 토큰 가져오기
+    let jwtToken: string | null = null;
+    try {
+        const session = await fetchAuthSession();
+        jwtToken = session.tokens?.idToken?.toString() || null;
+
+        if (!jwtToken) {
+            console.error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+            return false;
+        }
+    } catch (error) {
+        console.error('인증 토큰을 가져올 수 없습니다:', error);
+        return false;
+    }
+
+    try {
+        // downloadUrl을 받기 위해 POST 요청
+        const response = await apiClient.post<MatchingResultsExportResponse>(
+            '/admin/results/export',
+            { formId },
+            {
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        if (response.error) {
+            console.error('CSV 다운로드 URL 요청 실패:', response.error);
+            alert('CSV 다운로드에 실패했습니다.');
+            return false;
+        }
+
+        if (!response.data?.downloadUrl) {
+            console.error('downloadUrl이 없습니다.');
+            alert('다운로드 URL을 받을 수 없습니다.');
+            return false;
+        }
+
+        // downloadUrl로 파일 다운로드
+        const link = document.createElement('a');
+        link.setAttribute('href', response.data.downloadUrl);
+        link.setAttribute('download', `matching-results-${formId}.csv`);
+        link.setAttribute('target', '_blank');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        return true;
+    } catch (error) {
+        console.error('CSV 다운로드 중 오류 발생:', error);
+        alert('CSV 다운로드에 실패했습니다.');
+        return false;
+    }
+}
+
+/**
+ * 매칭 결과 이메일 발송
+ */
+export async function sendMatchingResultsEmail(formId: string): Promise<boolean> {
+    // 인증 토큰 가져오기
+    let jwtToken: string | null = null;
+    try {
+        const session = await fetchAuthSession();
+        jwtToken = session.tokens?.idToken?.toString() || null;
+
+        if (!jwtToken) {
+            console.error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+            return false;
+        }
+    } catch (error) {
+        console.error('인증 토큰을 가져올 수 없습니다:', error);
+        return false;
+    }
+
+    try {
+        // 204 No Content 응답을 처리하기 위해 axiosInstance 직접 사용
+        const response = await axiosInstance.post(
+            '/admin/email/result',
+            { formId },
+            {
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        // 204 No Content는 성공 응답
+        if (response.status === 204) {
+            return true;
+        }
+
+        // 다른 성공 응답 (200, 201 등)
+        if (response.status >= 200 && response.status < 300) {
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        console.error('이메일 발송 중 오류 발생:', error);
+        return false;
+    }
 }
 
