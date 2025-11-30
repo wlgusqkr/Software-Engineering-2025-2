@@ -410,6 +410,10 @@ export async function runMatching(formId: string): Promise<MatchingResultRespons
         if (response.error.statusCode === 401 || response.error.code === 'UNAUTHORIZED') {
             console.error('인증이 필요합니다. 로그인해주세요.');
         }
+        // 500 에러인 경우 특별 처리 (에러 정보를 포함하여 반환)
+        if (response.error.statusCode === 500) {
+            return { is500Error: true } as MatchingResultResponse & { is500Error: boolean };
+        }
         return null;
     }
     return response.data || null;

@@ -16,13 +16,26 @@ export interface MatchingResultResponse {
 }
 
 /**
+ * 매칭 결과 멤버 정보
+ */
+export interface MatchingMemberInfo {
+    completed: boolean;
+    studentId: string;
+    formId: string;
+    createdAt: string;
+    email: string;
+    name: string;
+    gender: "남" | "여";
+}
+
+/**
  * 매칭 결과 응답 (새 형식)
  */
 export interface MatchingResultItemResponse {
     roomId: string;
-    score: number;
-    memberA: string | { studentId?: string; name?: string; [key: string]: any };
-    memberB: string | { studentId?: string; name?: string; [key: string]: any };
+    score: string | number;
+    memberA: MatchingMemberInfo | string | { studentId?: string; name?: string; [key: string]: any };
+    memberB: MatchingMemberInfo | string | { studentId?: string; name?: string; [key: string]: any };
 }
 
 /**
@@ -33,6 +46,8 @@ export interface MatchingResultDetailResponse {
     totalParticipants: number;
     completedCount: number;
     notCompletedCount: number;
-    results: MatchingResultItemResponse[];
+    maleResults?: MatchingResultItemResponse[];
+    femaleResults?: MatchingResultItemResponse[];
+    results?: MatchingResultItemResponse[]; // 기존 형식 호환성
 }
 

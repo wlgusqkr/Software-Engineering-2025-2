@@ -4,19 +4,29 @@ import "../../styles/results.css";
 interface MatchResult {
   id: number;
   roomNumber: string;
-  studentA: string;
-  studentB: string;
+  studentA: {
+    name: string;
+    studentId: string;
+    email: string;
+    gender: string;
+    completed: boolean;
+  };
+  studentB: {
+    name: string;
+    studentId: string;
+    email: string;
+    gender: string;
+    completed: boolean;
+  };
   matchScore: number;
 }
 
 interface ResultsTableProps {
   results: MatchResult[];
-  onEdit: (matchId: number) => void;
 }
 
 export default function ResultsTable({
   results,
-  onEdit,
 }: ResultsTableProps) {
   const getScoreClass = (score: number) => {
     if (score >= 90) return "high";
@@ -33,29 +43,38 @@ export default function ResultsTable({
             <th>학생 A 정보</th>
             <th>학생 B 정보</th>
             <th>매칭 점수</th>
-            <th>작업</th>
           </tr>
         </thead>
         <tbody>
           {results.map((result) => (
             <tr key={result.id}>
               <td>{result.roomNumber}</td>
-              <td>{result.studentA}</td>
-              <td>{result.studentB}</td>
+              <td>
+                <div className="student-info">
+                  <div className="student-name-id">
+                    {result.studentA.name} ({result.studentA.studentId})
+                  </div>
+                  {result.studentA.email && (
+                    <div className="student-email">{result.studentA.email}</div>
+                  )}
+                </div>
+              </td>
+              <td>
+                <div className="student-info">
+                  <div className="student-name-id">
+                    {result.studentB.name} ({result.studentB.studentId})
+                  </div>
+                  {result.studentB.email && (
+                    <div className="student-email">{result.studentB.email}</div>
+                  )}
+                </div>
+              </td>
               <td>
                 <span
                   className={`match-score ${getScoreClass(result.matchScore)}`}
                 >
                   {result.matchScore}점
                 </span>
-              </td>
-              <td>
-                <button
-                  className="btn-small btn-edit btn-edit-match"
-                  onClick={() => onEdit(result.id)}
-                >
-                  수정
-                </button>
               </td>
             </tr>
           ))}

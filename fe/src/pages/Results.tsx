@@ -20,13 +20,29 @@ interface Survey {
 interface MatchResult {
   id: number;
   roomNumber: string;
-  studentA: string;
-  studentB: string;
+  studentA: {
+    name: string;
+    studentId: string;
+    email: string;
+    gender: string;
+    completed: boolean;
+  };
+  studentB: {
+    name: string;
+    studentId: string;
+    email: string;
+    gender: string;
+    completed: boolean;
+  };
   matchScore: number;
 }
 
 export default function Results() {
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
+  const [maleCurrentPage, setMaleCurrentPage] = useState<number>(1);
+  const [femaleCurrentPage, setFemaleCurrentPage] = useState<number>(1);
+  const [legacyCurrentPage, setLegacyCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10; // 페이지당 표시할 항목 수
 
   // 설문 목록 조회
   const { data: surveysData = [] } = useSurveys();
@@ -64,27 +80,124 @@ export default function Results() {
     useMatchingResultDetail(selectedFormId);
 
   // 매칭 결과를 로컬 형식으로 변환
-  const results: MatchResult[] = (matchingDetail?.results || []).map(
-    (item, index) => {
-      // memberA와 memberB가 객체인 경우 문자열로 변환
-      const getStudentString = (
-        member: string | { studentId?: string; name?: string } | undefined
-      ): string => {
-        if (!member) return "";
-        if (typeof member === "string") return member;
-        // 객체인 경우 studentId 또는 name을 사용
-        return member.studentId || member.name || JSON.stringify(member);
-      };
-
+  const convertMemberToStudent = (member: any) => {
+    if (!member) {
       return {
-        id: index + 1,
-        roomNumber: item.roomId || `A${String(index + 1).padStart(3, "0")}`,
-        studentA: getStudentString(item.memberA),
-        studentB: getStudentString(item.memberB),
-        matchScore: item.score || 0,
+        name: "",
+        studentId: "",
+        email: "",
+        gender: "",
+        completed: false,
       };
     }
-  );
+    
+    if (typeof member === "string") {
+      return {
+        name: member,
+        studentId: "",
+        email: "",
+        gender: "",
+        completed: false,
+      };
+    }
+
+    return {
+      name: member.name || "",
+      studentId: member.studentId || "",
+      email: member.email || "",
+      gender: member.gender || "",
+      completed: member.completed || false,
+    };
+  };
+
+  // 남성 결과 변환
+  const maleResults: MatchResult[] = (matchingDetail?.maleResults || []).map((item, index) => {
+    return {
+      id: index + 1,
+      roomNumber: item.roomId || `M${String(index + 1).padStart(3, "0")}`,
+      studentA: convertMemberToStudent(item.memberA),
+      studentB: convertMemberToStudent(item.memberB),
+      matchScore: typeof item.score === "string" ? parseInt(item.score, 10) || 0 : item.score || 0,
+    };
+  });
+
+  // 여성 결과 변환
+  const femaleResults: MatchResult[] = (matchingDetail?.femaleResults || []).map((item, index) => {
+    return {
+      id: index + 1,
+      roomNumber: item.roomId || `F${String(index + 1).padStart(3, "0")}`,
+      studentA: convertMemberToStudent(item.memberA),
+      studentB: convertMemberToStudent(item.memberB),
+      matchScore: typeof item.score === "string" ? parseInt(item.score, 10) || 0 : item.score || 0,
+    };
+  });
+
+  // 기존 형식 호환성 (results가 있는 경우)
+  const legacyResults: MatchResult[] = (matchingDetail?.results || []).map((item, index) => {
+    return {
+      id: index + 1,
+      roomNumber: item.roomId || `A${String(index + 1).padStart(3, "0")}`,
+      studentA: convertMemberToStudent(item.memberA),
+      studentB: convertMemberToStudent(item.memberB),
+      matchScore: typeof item.score === "string" ? parseInt(item.score, 10) || 0 : item.score || 0,
+    };
+  });
+
+  const totalResults = maleResults.length + femaleResults.length + legacyResults.length;
+
+  // 남성 결과 페이징 계산
+  const maleTotalPages = Math.ceil(maleResults.length / itemsPerPage);
+  const maleStartIndex = (maleCurrentPage - 1) * itemsPerPage;
+  const maleEndIndex = maleStartIndex + itemsPerPage;
+  const paginatedMaleResults = maleResults.slice(maleStartIndex, maleEndIndex);
+
+  // 여성 결과 페이징 계산
+  const femaleTotalPages = Math.ceil(femaleResults.length / itemsPerPage);
+  const femaleStartIndex = (femaleCurrentPage - 1) * itemsPerPage;
+  const femaleEndIndex = femaleStartIndex + itemsPerPage;
+  const paginatedFemaleResults = femaleResults.slice(femaleStartIndex, femaleEndIndex);
+
+  // 기존 형식 결과 페이징 계산
+  const legacyTotalPages = Math.ceil(legacyResults.length / itemsPerPage);
+  const legacyStartIndex = (legacyCurrentPage - 1) * itemsPerPage;
+  const legacyEndIndex = legacyStartIndex + itemsPerPage;
+  const paginatedLegacyResults = legacyResults.slice(legacyStartIndex, legacyEndIndex);
+
+  // 페이지 변경 핸들러
+  const handleMalePageChange = (page: number) => {
+    if (page >= 1 && page <= maleTotalPages) {
+      setMaleCurrentPage(page);
+      // 해당 섹션으로 스크롤
+      const element = document.getElementById('male-results-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const handleFemalePageChange = (page: number) => {
+    if (page >= 1 && page <= femaleTotalPages) {
+      setFemaleCurrentPage(page);
+      // 해당 섹션으로 스크롤
+      const element = document.getElementById('female-results-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const handleLegacyPageChange = (page: number) => {
+    if (page >= 1 && page <= legacyTotalPages) {
+      setLegacyCurrentPage(page);
+    }
+  };
+
+  // 설문이 변경되면 모든 페이지를 첫 페이지로 리셋
+  useEffect(() => {
+    setMaleCurrentPage(1);
+    setFemaleCurrentPage(1);
+    setLegacyCurrentPage(1);
+  }, [selectedSurveyId]);
 
   // URL 파라미터에서 설문 ID 가져오기
   useEffect(() => {
@@ -101,9 +214,6 @@ export default function Results() {
     }
   }, []);
 
-  const handleEditMatch = (matchId: number) => {
-    alert(`매칭 ${matchId} 수정 기능 (구현 예정)`);
-  };
 
   const handleDownloadResults = () => {
     if (!selectedSurveyId) {
@@ -116,8 +226,8 @@ export default function Results() {
   // 통계 계산 (API에서 받은 데이터 사용)
   const totalParticipants = matchingDetail?.totalParticipants || 0;
   const completedCount = matchingDetail?.completedCount || 0;
-  const totalMatched = results.length * 2;
-  const successfulPairs = results.length;
+  const totalMatched = totalResults * 2;
+  const successfulPairs = totalResults;
   const successRate =
     totalParticipants > 0
       ? Math.round((completedCount / totalParticipants) * 100)
@@ -149,7 +259,7 @@ export default function Results() {
             unmatched={unmatched}
           />
 
-          {results.length > 0 && (
+          {totalResults > 0 && (
             <>
               <div className="results-actions">
                 <button
@@ -161,13 +271,79 @@ export default function Results() {
                 </button>
               </div>
 
-              <ResultsTable results={results} onEdit={handleEditMatch} />
+              {/* 남성 매칭 결과 */}
+              {maleResults.length > 0 && (
+                <div id="male-results-section" className="gender-results-section">
+                  <h3 className="gender-section-title male-section">
+                    <span className="gender-icon">👨</span> 남성 매칭 결과 ({maleResults.length}쌍)
+                  </h3>
+                  {paginatedMaleResults.length > 0 && (
+                    <div className="results-table-wrapper">
+                      <div className="results-info">
+                        전체 {maleResults.length}개 중 {maleStartIndex + 1}-{Math.min(maleEndIndex, maleResults.length)}개 표시
+                      </div>
+                      <ResultsTable results={paginatedMaleResults} />
+                    </div>
+                  )}
+                  {maleTotalPages > 1 && (
+                    <Pagination
+                      currentPage={maleCurrentPage}
+                      totalPages={maleTotalPages}
+                      onPageChange={handleMalePageChange}
+                    />
+                  )}
+                </div>
+              )}
 
-              <Pagination />
+              {/* 여성 매칭 결과 */}
+              {femaleResults.length > 0 && (
+                <div id="female-results-section" className="gender-results-section">
+                  <h3 className="gender-section-title female-section">
+                    <span className="gender-icon">👩</span> 여성 매칭 결과 ({femaleResults.length}쌍)
+                  </h3>
+                  {paginatedFemaleResults.length > 0 && (
+                    <div className="results-table-wrapper">
+                      <div className="results-info">
+                        전체 {femaleResults.length}개 중 {femaleStartIndex + 1}-{Math.min(femaleEndIndex, femaleResults.length)}개 표시
+                      </div>
+                      <ResultsTable results={paginatedFemaleResults} />
+                    </div>
+                  )}
+                  {femaleTotalPages > 1 && (
+                    <Pagination
+                      currentPage={femaleCurrentPage}
+                      totalPages={femaleTotalPages}
+                      onPageChange={handleFemalePageChange}
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* 기존 형식 호환성 */}
+              {legacyResults.length > 0 && (
+                <div className="gender-results-section">
+                  <h3 className="gender-section-title">매칭 결과 ({legacyResults.length}쌍)</h3>
+                  {paginatedLegacyResults.length > 0 && (
+                    <div className="results-table-wrapper">
+                      <div className="results-info">
+                        전체 {legacyResults.length}개 중 {legacyStartIndex + 1}-{Math.min(legacyEndIndex, legacyResults.length)}개 표시
+                      </div>
+                      <ResultsTable results={paginatedLegacyResults} />
+                    </div>
+                  )}
+                  {legacyTotalPages > 1 && (
+                    <Pagination
+                      currentPage={legacyCurrentPage}
+                      totalPages={legacyTotalPages}
+                      onPageChange={handleLegacyPageChange}
+                    />
+                  )}
+                </div>
+              )}
             </>
           )}
 
-          {results.length === 0 && (
+          {totalResults === 0 && (
             <div className="alert alert-info">
               선택한 설문에 매칭 결과가 없습니다.
             </div>

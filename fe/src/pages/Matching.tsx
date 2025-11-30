@@ -47,19 +47,6 @@ export default function Matching() {
     };
   });
 
-  // 선택된 설문의 formId 찾기
-  const selectedSurvey = selectedSurveyId
-    ? surveys.find((s) => s.id === selectedSurveyId)
-    : null;
-  const selectedSurveyWithStats = selectedSurvey
-    ? surveysWithStatsData.find((s) => s.formId === selectedSurvey.formId)
-    : null;
-
-  // 선택된 설문의 응답 데이터 조회 (현재 사용되지 않지만 향후 사용 가능)
-  // const { data: responsesData = [] } = useSurveyResponses(
-  //   selectedSurveyWithStats?.formId || null
-  // );
-
   const handleRunMatching = async () => {
     if (!selectedSurveyId) {
       alert("매칭할 설문을 선택해주세요.");
@@ -102,14 +89,11 @@ export default function Matching() {
         surveyWithStats.formId
       );
 
-      if (result) {
-        setMatchingStatus(
-          `매칭 완료! ${result.pairs?.length || 0}개의 쌍이 매칭되었습니다.`
-        );
-
-        setTimeout(() => {
-          window.location.href = `/results?surveyId=${selectedSurveyId}`;
-        }, 2000);
+      // 500 에러인 경우 실패 메시지 표시
+      if (result && "is500Error" in result) {
+        setMatchingStatus("매칭 실패");
+      } else if (result) {
+        setMatchingStatus("매칭 성공");
       } else {
         setMatchingStatus("매칭 실행에 실패했습니다.");
       }
